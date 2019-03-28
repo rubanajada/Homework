@@ -1,0 +1,167 @@
+
+Sub total():
+
+Dim total_vol As Double
+
+Dim ticker As String
+
+Dim ticker_index As Integer
+Dim open_price As Double
+Dim close_price As Double
+Dim greatest_pperc_inc As Double
+Dim greatest_perc_inc As Double
+Dim greatest_perc_dec As Double
+Dim greatest_total_vol As Double
+
+Dim ticker_perc_inc As String
+Dim ticker_perc_dec As String
+Dim ticker_perc_totVol As String
+   
+   
+
+
+Dim ws As Worksheet
+
+For Each ws In Worksheets
+        
+        ws.Cells(1, 8).Value = "Ticker"
+        ws.Cells(1, 9).Value = "Total Stock Volume"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 16).Value = "Ticker"
+        ws.Cells(1, 17).Value = "Value"
+        ws.Cells(2, 15).Value = "Greatest % Increase"
+        ws.Cells(3, 15).Value = "Greatest % Decrease"
+        ws.Cells(4, 15).Value = "Greatest Total Volume"
+        
+        ticker = ws.Cells(2, 1).Value
+        open_price = ws.Cells(2, 3).Value
+        
+        lastrow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+         
+        total_vol = 0
+        ticker_index = 2
+        greatest_perc_inc = 0
+        greatest_perc_dec = 0
+        
+        greates_total_vol = 0
+        
+        For I = 2 To lastrow
+        
+            If (ws.Cells(I, 1).Value = ticker) Then
+        
+                total_vol = total_vol + ws.Cells(I, 7).Value
+            Else
+               
+                ws.Cells(ticker_index, 8).Value = ticker
+                ws.Cells(ticker_index, 9).Value = total_vol
+                
+                If (total_vol > greatest_total_vol) Then
+                    greatest_total_vol = total_vol
+                    ticker_perc_totVol = ticker
+                End If
+                
+                
+                ws.Cells(ticker_index, 10).Value = ws.Cells(I - 1, 6).Value - open_price
+                
+                If (ws.Cells(ticker_index, 10).Value < 0) Then
+                    ws.Cells(ticker_index, 10).Interior.ColorIndex = 3
+                Else
+                    ws.Cells(ticker_index, 10).Interior.ColorIndex = 4
+                End If
+                
+                ' Calculate percentage
+                If (open_price <> 0) Then
+                    ws.Cells(ticker_index, 11).Value = (ws.Cells(I - 1, 6).Value - open_price) / open_price
+                Else
+                    ws.Cells(ticker_index, 11).Value = (ws.Cells(I - 1, 6).Value - open_price)
+                End If
+                
+                
+                ' Greatest Percantage Increase
+                If (ws.Cells(ticker_index, 11).Value > greatest_perc_inc) Then
+                
+                    greatest_perc_inc = ws.Cells(ticker_index, 11).Value
+                    ticker_perc_inc = ticker
+        
+                    
+                End If
+                
+                'Greatest Percentage Decrease
+                If (ws.Cells(ticker_index, 11).Value < greatest_perc_dec) Then
+                
+                    greatest_perc_dec = ws.Cells(ticker_index, 11).Value
+                    ticker_perc_dec = ticker
+                    
+                End If
+                
+                   
+                
+                ws.Cells(ticker_index, 11).NumberFormat = "0.00%"
+                
+                ticker_index = ticker_index + 1
+                open_price = ws.Cells(I, 3).Value
+                total_vol = ws.Cells(I, 7).Value
+                 
+                 
+            End If
+        
+          
+            ticker = ws.Cells(I, 1).Value
+        
+        Next I
+         
+        ws.Cells(ticker_index, 8).Value = ticker
+        ws.Cells(ticker_index, 9).Value = total_vol
+        ws.Cells(ticker_index, 10).Value = ws.Cells(I - 1, 6).Value - open_price
+        ws.Cells(ticker_index, 11).Value = (ws.Cells(I - 1, 6).Value - open_price) / open_price
+         
+        If (ws.Cells(ticker_index, 10).Value < 0) Then
+            ws.Cells(ticker_index, 10).Interior.ColorIndex = 3
+        Else
+            ws.Cells(ticker_index, 10).Interior.ColorIndex = 4
+        End If
+        
+        If (total_vol > greatest_total_vol) Then
+                    greatest_total_vol = total_vol
+                    ticker_perc_totVol = ticker
+        End If
+        
+        ' Greatest Percantage Increase
+        If (ws.Cells(ticker_index, 11).Value > greatest_perc_inc) Then
+                
+           greatest_perc_inc = ws.Cells(ticker_index, 11)
+           ticker_perc_inc = ticker
+           
+                    
+        End If
+                
+        'Greatest Percentage Decrease
+        
+        If (ws.Cells(ticker_index, 11).Value < greatest_perc_dec) Then
+                
+            greatest_perc_dec = ws.Cells(ticker_index, 11).Value
+            ticker_perc_dec = ticker
+                    
+        End If
+                
+                     
+        ws.Cells(2, 16).Value = ticker_perc_inc
+        ws.Cells(2, 17).Value = greatest_perc_inc
+        
+        ws.Cells(3, 16).Value = ticker_perc_dec
+        ws.Cells(3, 17).Value = greatest_perc_dec
+        
+        ws.Cells(4, 16).Value = ticker_perc_totVol
+        ws.Cells(4, 17).Value = greatest_total_vol
+        
+Next
+
+
+End Sub
+
+
+
+
+
+
